@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TOOL_H_
+#define TOOL_H_
 
 #include <stdint.h>
 
@@ -23,4 +24,6 @@ char *serialLengthDelimited(char *p, const char *v, size_t vn);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

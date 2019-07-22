@@ -1,4 +1,5 @@
 #include "tool.h"
+#include <stdint.h>
 
 char toHexChar(uint8_t val)
 {
