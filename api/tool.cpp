@@ -1,5 +1,4 @@
 #include "tool.h"
-#include <stdint.h>
 
 char toHexChar(uint8_t val)
 {
@@ -9,11 +8,19 @@ char toHexChar(uint8_t val)
 	return '0' + val;
 }
 
-const char* toHexString(char* des, const char *src, size_t len)
+uint8_t HexCharToSrc(char c)
+{
+    if('A' <= c && c <= 'F')
+        return 10 + c - 'A';
+
+    return c - '0';
+}
+
+const char* toHexString(char* des, const char *src, uint32_t len)
 {
 	char* xdes = des;
 
-	for (size_t i = 0; i < len; ++i)
+	for (uint32_t i = 0; i < len; ++i)
 	{
 		unsigned char c = *src++;
 		*des++ = toHexChar(c >> 4);
@@ -24,11 +31,11 @@ const char* toHexString(char* des, const char *src, size_t len)
 	return xdes;
 }
 
-const char* toHexBinary(char* des, const char* src, size_t len)
+const char* toHexBinary(char* des, const char* src, uint32_t len)
 {
 	char* xdes = des;
 
-	for (size_t i = 0; i < len; ++i)
+	for (uint32_t i = 0; i < len; ++i)
 	{
 		unsigned char c = *src++;
 		for (int shift = 0; shift < 8; ++shift)
@@ -41,10 +48,10 @@ const char* toHexBinary(char* des, const char* src, size_t len)
 	return xdes;
 }
 
-const char* parseVarint64(const char* p, uint64_t* v)
+const char* parseVarint64(const char* p, const char *end, uint64_t* v)
 {
 	uint64_t result = 0;
-	for (uint32_t shift = 0; shift < 70; shift += 7)
+	for (uint32_t shift = 0; shift < 70 && p < end; shift += 7)
 	{
 		uint64_t byte = *((const unsigned char*)p);
 		p++;
@@ -57,20 +64,20 @@ const char* parseVarint64(const char* p, uint64_t* v)
 		}
 	}
 
-	return NULL;
+	return p;
 }
 
-const char* parseLengthDelimited(const char* p, char* v, size_t* vn)
+const char* parseLengthDelimited(const char* p, const char *end, char* v, uint32_t* vn)
 {
 	uint64_t len = 0;
-	p = parseVarint64(p, &len);
+	p = parseVarint64(p, end, &len);
 
-	for (size_t i = 0; i < len; ++i)
+	for (uint32_t i = 0; i < len && p < end; ++i)
 	{
 		*v = *p;
 		p++, v++;
 	}
-	*vn = (size_t)len;
+	*vn = (uint32_t)len;
 
 	return p;
 }
@@ -89,11 +96,11 @@ char* serialint64(char* p, uint64_t v)
 	return p;
 }
 
-char* serialLengthDelimited(char* p, const char* v, size_t vn)
+char* serialLengthDelimited(char* p, const char* v, uint32_t vn)
 {
 	p = serialint64(p, vn);
 
-	for (size_t i = 0; i < vn; ++i)
+	for (uint32_t i = 0; i < vn; ++i)
 	{
 		*p = *v;
 		p++, v++;

@@ -23,6 +23,9 @@ static int writeLengthDelimited(lua_State *l);
 static int tMalloc(lua_State *l);
 static int tFree(lua_State *l);
 
+static int toHexStr(lua_State *l);
+static int hexStrToSrc(lua_State *l);
+
 int tAdd(int a, int b);
 
 #ifdef __cplusplus
